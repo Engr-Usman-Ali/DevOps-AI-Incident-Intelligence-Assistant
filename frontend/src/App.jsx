@@ -1,10 +1,8 @@
+import AppRouter from "./router/AppRouter";
 import "./index.css";
-import Landing from "./pages/Landing";
 
 function App() {
-  return (
-    <Landing />
-  );
+  return <AppRouter />;
 }
 
 export default App;
