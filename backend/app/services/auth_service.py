@@ -36,33 +36,32 @@ def register_user(user: UserSignup, db: Session):
     return new_user
 
 
-def login_user(user: UserLogin, db: Session):
 
-    existing_user = (
+def login_user(user: UserLogin, db: Session):
+    db_user = (
         db.query(User)
         .filter(User.email == user.email)
         .first()
     )
 
-    if not existing_user:
+    if not db_user:
         raise HTTPException(
-            status_code=401,
-            detail="Invalid email or password"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password",
         )
 
     if not verify_password(
         user.password,
-        existing_user.hashed_password
+        db_user.hashed_password,
     ):
         raise HTTPException(
-            status_code=401,
-            detail="Invalid email or password"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password",
         )
 
     access_token = create_access_token(
         data={
-            "sub": existing_user.email,
-            "id": existing_user.id,
+            "sub": db_user.email,
         }
     )
 

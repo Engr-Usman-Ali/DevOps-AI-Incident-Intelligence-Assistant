@@ -2,12 +2,15 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck, Loader2 } from "lucide-react";
 import { signup, login } from "../../services/authService";
+import useAuth from "../../hooks/useAuth";
+
 import toast from "react-hot-toast";
 
 export default function AuthCard({ mode }) {
   const isSignIn = mode === "signin";
 
   const navigate = useNavigate();
+  const { login: loginUser } = useAuth();
 
   const [loading, setLoading] = useState(false);
 
@@ -28,11 +31,14 @@ export default function AuthCard({ mode }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // --------------------------
+    // SIGN UP
+    // --------------------------
     if (!isSignIn) {
       if (
-        formData.full_name.trim() === "" ||
-        formData.email.trim() === "" ||
-        formData.password.trim() === ""
+        !formData.full_name.trim() ||
+        !formData.email.trim() ||
+        !formData.password.trim()
       ) {
         toast.error("Please fill all fields");
         return;
@@ -56,8 +62,14 @@ export default function AuthCard({ mode }) {
 
         navigate("/signin");
       } catch (error) {
-        if (error.response) {
-          toast.error(error.response.data.detail);
+        if (error.response?.data?.detail) {
+          const detail = error.response.data.detail;
+
+          if (typeof detail === "string") {
+            toast.error(detail);
+          } else {
+            toast.error("Validation failed");
+          }
         } else {
           toast.error("Server not responding");
         }
@@ -68,7 +80,10 @@ export default function AuthCard({ mode }) {
       return;
     }
 
-    if (formData.email.trim() === "" || formData.password.trim() === "") {
+    // --------------------------
+    // SIGN IN
+    // --------------------------
+    if (!formData.email.trim() || !formData.password.trim()) {
       toast.error("Please fill all fields");
       return;
     }
@@ -81,14 +96,13 @@ export default function AuthCard({ mode }) {
         password: formData.password,
       });
 
-      localStorage.setItem("access_token", response.access_token);
-      
+      await loginUser(response.access_token);
 
       toast.success("Login successful!");
 
       navigate("/dashboard");
     } catch (error) {
-      if (error.response) {
+      if (error.response?.data?.detail) {
         toast.error(error.response.data.detail);
       } else {
         toast.error("Server not responding");

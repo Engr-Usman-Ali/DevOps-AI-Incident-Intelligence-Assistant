@@ -6,11 +6,12 @@ import {
   LogOut,
   ShieldCheck,
 } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
+import useAuth from "../hooks/useAuth";
 
-export default function Sidebar() {
-  const navigate = useNavigate();
+
+export default function Sidebar() { 
 
   const menus = [
     {
@@ -35,10 +36,7 @@ export default function Sidebar() {
     },
   ];
 
-  const logout = () => {
-    // TODO: Clear auth token/session here
-    navigate("/");
-  };
+  const { logout } = useAuth();
 
   return (
     <aside className="sticky top-0 flex h-screen w-72 flex-col border-r border-slate-800 bg-slate-950">
