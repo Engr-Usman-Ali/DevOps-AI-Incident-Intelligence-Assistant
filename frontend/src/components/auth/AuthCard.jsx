@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck, Loader2 } from "lucide-react";
-import { signup } from "../../services/authService";
+import { signup, login } from "../../services/authService";
 import toast from "react-hot-toast";
 
 export default function AuthCard({ mode }) {
@@ -68,14 +68,39 @@ export default function AuthCard({ mode }) {
       return;
     }
 
-    toast("Login API will be connected next.");
+    if (formData.email.trim() === "" || formData.password.trim() === "") {
+      toast.error("Please fill all fields");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await login({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      localStorage.setItem("access_token", response.access_token);
+      
+
+      toast.success("Login successful!");
+
+      navigate("/dashboard");
+    } catch (error) {
+      if (error.response) {
+        toast.error(error.response.data.detail);
+      } else {
+        toast.error("Server not responding");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-8 shadow-2xl">
-
       <div className="flex flex-col items-center">
-
         <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500">
           <ShieldCheck size={32} className="text-white" />
         </div>
@@ -89,11 +114,9 @@ export default function AuthCard({ mode }) {
             ? "Sign in to access your private AI conversations."
             : "Create your account to securely store AI analyses and chat history."}
         </p>
-
       </div>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-
         {!isSignIn && (
           <input
             type="text"
@@ -142,19 +165,15 @@ export default function AuthCard({ mode }) {
           {loading ? (
             <>
               <Loader2 className="mr-2 animate-spin" size={20} />
-              Creating...
+              {isSignIn ? "Signing In..." : "Creating..."}
             </>
           ) : (
-            <>
-              {isSignIn ? "Sign In" : "Create Account"}
-            </>
+            <>{isSignIn ? "Sign In" : "Create Account"}</>
           )}
         </button>
-
       </form>
 
       <div className="mt-6 text-center text-slate-400">
-
         {isSignIn ? (
           <>
             Don't have an account?{" "}
@@ -176,9 +195,7 @@ export default function AuthCard({ mode }) {
             </Link>
           </>
         )}
-
       </div>
-
     </div>
   );
 }
