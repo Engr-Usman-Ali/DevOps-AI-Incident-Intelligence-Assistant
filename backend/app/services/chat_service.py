@@ -3,6 +3,11 @@ from fastapi import (
     HTTPException,
 )
 
+from app.services.parser_service import (
+    extract_log_information,
+)
+
+
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 
 ALLOWED_EXTENSIONS = {
@@ -68,19 +73,10 @@ async def analyze_chat(
     # Build AI Prompt
     # -------------------------
 
-    prompt = f"""
-You are an expert DevOps Incident Engineer.
-
-User Question:
-{message}
-
-Log File:
-{log_content}
-"""
-
-    # Temporary response
-    # Later this prompt goes to HuggingFace
+    parsed_log = extract_log_information(log_content)
 
     return {
-        "reply": prompt,
+        "reply": "Log parsed successfully.",
+        "analysis": None,
+        "parsed_log": parsed_log,
     }
