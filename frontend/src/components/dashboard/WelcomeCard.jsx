@@ -1,7 +1,10 @@
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
 
 export default function WelcomeCard() {
+  const { user, loading } = useAuth();
+
   return (
     <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-700 via-indigo-700 to-cyan-600 p-10">
 
@@ -19,7 +22,9 @@ export default function WelcomeCard() {
 
         <h1 className="mt-6 text-5xl font-bold">
 
-          Welcome Back 👋
+          {loading
+            ? "Loading..."
+            : `Welcome Back, ${user?.full_name || "User"} 👋`}
 
         </h1>
 
@@ -30,11 +35,28 @@ export default function WelcomeCard() {
 
         </p>
 
-        <div className="flex gap-4 mt-8">
+        <div className="mt-4 text-blue-100">
+
+          {!loading && user && (
+            <>
+              <p>
+                <strong>Email:</strong> {user.email}
+              </p>
+
+              <p>
+                <strong>Member Since:</strong>{" "}
+                {new Date(user.created_at).toLocaleDateString()}
+              </p>
+            </>
+          )}
+
+        </div>
+
+        <div className="mt-8 flex gap-4">
 
           <Link
             to="/chatbot"
-            className="bg-white text-blue-700 px-6 py-3 rounded-xl font-semibold flex items-center gap-2 hover:scale-105 transition"
+            className="flex items-center gap-2 rounded-xl bg-white px-6 py-3 font-semibold text-blue-700 transition hover:scale-105"
           >
             Open AI Assistant
 
@@ -44,7 +66,7 @@ export default function WelcomeCard() {
 
           <Link
             to="/history"
-            className="border border-white/40 px-6 py-3 rounded-xl hover:bg-white/10 transition"
+            className="rounded-xl border border-white/40 px-6 py-3 transition hover:bg-white/10"
           >
             View History
           </Link>

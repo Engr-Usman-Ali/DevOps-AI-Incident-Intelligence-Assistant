@@ -4,16 +4,22 @@ import "./index.css";
 import App from "./App";
 
 import { Toaster } from "react-hot-toast";
+
 import AuthProvider from "./context/AuthContext";
+import ChatProvider from "./context/ChatContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
 
     <AuthProvider>
 
-      <App />
+      <ChatProvider>
 
-      <Toaster position="top-right" />
+        <App />
+
+        <Toaster position="top-right" />
+
+      </ChatProvider>
 
     </AuthProvider>
 
