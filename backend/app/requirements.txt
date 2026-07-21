@@ -1,1 +1,16 @@
-pip install fastapi uvicorn sqlalchemy psycopg2-binary python-dotenv python-jose passlib[bcrypt] python-multipart alembic email-validator
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+python-dotenv
+python-jose
+passlib[bcrypt]
+python-multipart
+alembic
+email-validator
+
+groq
+google-genai
+chromadb
+langchain
+langchain-community
