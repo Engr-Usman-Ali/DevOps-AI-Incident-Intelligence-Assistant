@@ -2,7 +2,6 @@ import Sidebar from "../components/Sidebar";
 import ChatHeader from "../components/chat/ChatHeader";
 import ChatWindow from "../components/chat/ChatWindow";
 import ChatInput from "../components/chat/ChatInput";
-import SuggestedQuestions from "../components/chat/SuggestedQuestions";
 
 export default function Chatbot() {
   return (
@@ -18,8 +17,6 @@ export default function Chatbot() {
         <div className="flex-1 overflow-y-auto">
 
           <div className="mx-auto max-w-5xl p-8">
-
-            <SuggestedQuestions />
 
             <ChatWindow />
 

@@ -3,12 +3,10 @@ from fastapi import (
     HTTPException,
 )
 
-from app.services.parser_service import (
-    extract_log_information,
-)
+from app.graph.graph import graph
 
 
-MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
+MAX_FILE_SIZE = 10 * 1024 * 1024
 
 ALLOWED_EXTENSIONS = {
     ".log",
@@ -21,17 +19,16 @@ async def analyze_chat(
     message: str,
     file: UploadFile | None,
 ):
+
     log_content = ""
 
-    # -------------------------
-    # If user uploaded a file
-    # -------------------------
+    # -----------------------------------------
+    # Validate Uploaded File
+    # -----------------------------------------
 
     if file:
 
         filename = file.filename.lower()
-
-        # Validate extension
 
         if not filename.endswith(tuple(ALLOWED_EXTENSIONS)):
             raise HTTPException(
@@ -39,11 +36,7 @@ async def analyze_chat(
                 detail="Only .log, .txt and .json files are allowed.",
             )
 
-        # Read file
-
         content = await file.read()
-
-        # Validate size
 
         if len(content) > MAX_FILE_SIZE:
             raise HTTPException(
@@ -52,31 +45,69 @@ async def analyze_chat(
             )
 
         try:
-            log_content = content.decode("utf-8")
+
+            log_content = content.decode(
+                "utf-8"
+            )
+
         except UnicodeDecodeError:
+
             raise HTTPException(
                 status_code=400,
                 detail="File must be UTF-8 encoded.",
             )
 
-    # -------------------------
-    # Require at least one input
-    # -------------------------
+    # -----------------------------------------
+    # Require Input
+    # -----------------------------------------
 
     if not message.strip() and not log_content:
+
         raise HTTPException(
             status_code=400,
             detail="Please provide a message or upload a log file.",
         )
 
-    # -------------------------
-    # Build AI Prompt
-    # -------------------------
+    # -----------------------------------------
+    # Initial Graph State
+    # -----------------------------------------
 
-    parsed_log = extract_log_information(log_content)
+    state = {
+
+        "user_question": message,
+
+        "log_content": log_content,
+
+        "parsed_log": {},
+
+        "rag_context": "",
+
+        "rag_score": 0.0,
+
+        "web_context": "",
+
+        "web_results": [],
+
+        "ai_response": {},
+
+    }
+
+    # -----------------------------------------
+    # Run LangGraph
+    # -----------------------------------------
+
+    result = graph.invoke(
+        state
+    )
+
+    # -----------------------------------------
+    # Return Response
+    # -----------------------------------------
 
     return {
-        "reply": "Log parsed successfully.",
-        "analysis": None,
-        "parsed_log": parsed_log,
+
+        "reply": result["ai_response"],
+
+        "parsed_log": result["parsed_log"],
+
     }

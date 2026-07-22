@@ -1,21 +1,22 @@
-import chromadb
 import uuid
+import chromadb
 
 from app.rag.embeddings import embed_text
 
 CHROMA_PATH = "app/chroma_db"
 
 client = chromadb.PersistentClient(
-    path=CHROMA_PATH
+    path=CHROMA_PATH,
 )
 
 collection = client.get_or_create_collection(
-    name="devops_incidents"
+    name="devops_incidents",
 )
+
 
 def add_documents(chunks):
     """
-    Store chunks inside ChromaDB.
+    Store document chunks in ChromaDB.
     """
 
     ids = []
@@ -23,17 +24,23 @@ def add_documents(chunks):
     embeddings = []
     metadatas = []
 
-    for i, chunk in enumerate(chunks):
+    for chunk in chunks:
 
         ids.append(str(uuid.uuid4()))
 
-        documents.append(chunk.page_content)
-
-        embeddings.append(
-            embed_text(chunk.page_content)
+        documents.append(
+            chunk.page_content
         )
 
-        metadatas.append(chunk.metadata)
+        embeddings.append(
+            embed_text(
+                chunk.page_content
+            )
+        )
+
+        metadatas.append(
+            chunk.metadata
+        )
 
     collection.add(
         ids=ids,
@@ -42,13 +49,27 @@ def add_documents(chunks):
         metadatas=metadatas,
     )
 
-def search(query, n_results=4):
+
+def search(
+    query,
+    n_results=4,
+):
+    """
+    Search ChromaDB.
+    """
 
     query_embedding = embed_text(query)
 
     results = collection.query(
-        query_embeddings=[query_embedding],
+        query_embeddings=[
+            query_embedding
+        ],
         n_results=n_results,
+        include=[
+            "documents",
+            "distances",
+            "metadatas",
+        ],
     )
 
     return results

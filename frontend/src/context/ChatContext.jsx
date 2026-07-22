@@ -10,7 +10,10 @@ export default function ChatProvider({ children }) {
   const send = async (text, file = null) => {
     if (!text.trim() && !file) return;
 
-    // User message
+    // ----------------------------
+    // User Message
+    // ----------------------------
+
     const userMessage = {
       id: Date.now(),
       role: "user",
@@ -24,14 +27,16 @@ export default function ChatProvider({ children }) {
         : null,
     };
 
-    // Temporary AI loading message
+    // ----------------------------
+    // AI Loading Message
+    // ----------------------------
+
     const thinkingMessage = {
       id: Date.now() + 1,
       role: "assistant",
       loading: true,
     };
 
-    // Show user message + loading bubble immediately
     setMessages((prev) => [
       ...prev,
       userMessage,
@@ -41,33 +46,49 @@ export default function ChatProvider({ children }) {
     setLoading(true);
 
     try {
-      const response = await sendMessage(text, file);
+      const response = await sendMessage(
+        text,
+        file
+      );
 
-      // Replace loading bubble with AI response
+      console.log(response);
+
+      // ----------------------------
+      // Replace Loading Bubble
+      // ----------------------------
+
       setMessages((prev) =>
-        prev.map((msg) =>
-          msg.loading
-            ? {
-                id: msg.id,
-                role: "assistant",
-                content: response.reply,
-                analysis: response.analysis || null,
-              }
-            : msg
-        )
+        prev.map((msg) => {
+          if (!msg.loading) return msg;
+
+          return {
+            id: msg.id,
+            role: "assistant",
+
+            // Complete AI JSON
+            analysis: response.reply,
+
+            // Parsed Log
+            parsedLog: response.parsed_log,
+
+            loading: false,
+          };
+        })
       );
     } catch (error) {
-      // Replace loading bubble with error
+      console.error(error);
+
       setMessages((prev) =>
-        prev.map((msg) =>
-          msg.loading
-            ? {
-                id: msg.id,
-                role: "assistant",
-                content: "❌ Something went wrong.",
-              }
-            : msg
-        )
+        prev.map((msg) => {
+          if (!msg.loading) return msg;
+
+          return {
+            id: msg.id,
+            role: "assistant",
+            content: "❌ Something went wrong.",
+            loading: false,
+          };
+        })
       );
     } finally {
       setLoading(false);

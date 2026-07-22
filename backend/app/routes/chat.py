@@ -1,6 +1,13 @@
-from fastapi import APIRouter, UploadFile, File, Form
+from fastapi import (
+    APIRouter,
+    UploadFile,
+    File,
+    Form,
+)
 
-from app.services.chat_service import analyze_chat
+from app.services.chat_service import (
+    analyze_chat,
+)
 
 router = APIRouter(
     prefix="/chat",
@@ -13,6 +20,7 @@ async def chat(
     message: str = Form(""),
     file: UploadFile | None = File(None),
 ):
+
     return await analyze_chat(
         message=message,
         file=file,
