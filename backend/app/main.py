@@ -5,6 +5,9 @@ from app.core.database import Base, engine
 from app.models import User
 from app.routes.auth import router as auth_router
 from app.routes.chat import router as chat_router
+from app.routes.memory import (
+    router as memory_router,
+)
 
 app = FastAPI(
     title="DevOps AI Assistant API",
@@ -31,6 +34,7 @@ app.add_middleware(
 # Routes
 app.include_router(auth_router)
 app.include_router(chat_router)
+app.include_router(memory_router)
 
 
 @app.get("/")

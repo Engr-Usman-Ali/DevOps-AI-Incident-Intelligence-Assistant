@@ -15,10 +15,10 @@ from app.web_search.web_search_service import (
     build_web_context,
 )
 
-
 # ==========================================
 # Parse Uploaded Log
 # ==========================================
+
 
 def parse_log_node(state):
 
@@ -26,9 +26,7 @@ def parse_log_node(state):
     print("NODE: PARSE LOG")
     print("=" * 70)
 
-    parsed_log = extract_log_information(
-        state["log_content"]
-    )
+    parsed_log = extract_log_information(state["log_content"])
 
     state["parsed_log"] = parsed_log
 
@@ -41,6 +39,7 @@ def parse_log_node(state):
 # ==========================================
 # Retrieve Context From ChromaDB
 # ==========================================
+
 
 def retrieve_rag_node(state):
 
@@ -70,6 +69,7 @@ def retrieve_rag_node(state):
 # First AI Call
 # ==========================================
 
+
 def ask_llm_node(state):
 
     print("\n" + "=" * 70)
@@ -80,13 +80,12 @@ def ask_llm_node(state):
         user_question=state["user_question"],
         log_content=state["log_content"],
         rag_context=state["rag_context"],
-        web_context="",
+        history=state["history"],
+        web_context=state["web_context"],
     )
 
     # Backend knows RAG was used
-    response["used_rag"] = bool(
-        state["rag_context"]
-    )
+    response["used_rag"] = bool(state["rag_context"])
 
     response["used_web_search"] = False
 
@@ -102,18 +101,14 @@ def ask_llm_node(state):
 # DuckDuckGo Search
 # ==========================================
 
+
 def web_search_node(state):
 
     print("\n" + "=" * 70)
     print("NODE: WEB SEARCH")
     print("=" * 70)
 
-    query = (
-        state["ai_response"].get(
-            "web_search_query"
-        )
-        or state["user_question"]
-    )
+    query = state["ai_response"].get("web_search_query") or state["user_question"]
 
     print("Search Query:")
     print(query)
@@ -127,9 +122,7 @@ def web_search_node(state):
 
     state["web_results"] = results
 
-    state["web_context"] = build_web_context(
-        results
-    )
+    state["web_context"] = build_web_context(results)
 
     return state
 
@@ -137,6 +130,7 @@ def web_search_node(state):
 # ==========================================
 # Second AI Call
 # ==========================================
+
 
 def final_llm_node(state):
 
@@ -148,21 +142,16 @@ def final_llm_node(state):
         user_question=state["user_question"],
         log_content=state["log_content"],
         rag_context=state["rag_context"],
+        history=state["history"],
         web_context=state["web_context"],
     )
 
     # Backend knows exactly what happened
-    response["used_rag"] = bool(
-        state["rag_context"]
-    )
+    response["used_rag"] = bool(state["rag_context"])
 
-    response["used_web_search"] = bool(
-        state["web_results"]
-    )
+    response["used_web_search"] = bool(state["web_results"])
 
-    response["web_results"] = state[
-        "web_results"
-    ]
+    response["web_results"] = state["web_results"]
 
     state["ai_response"] = response
 

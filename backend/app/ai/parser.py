@@ -56,6 +56,7 @@ def ask_llm(
     user_question,
     log_content,
     rag_context,
+    history=None,
     web_context="",
 ):
     """
@@ -66,6 +67,7 @@ def ask_llm(
         user_question=user_question,
         log_content=log_content,
         rag_context=rag_context,
+        history=history or [],
         web_context=web_context,
     )
 

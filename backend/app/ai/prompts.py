@@ -158,13 +158,34 @@ def build_prompt(
     user_question,
     log_content,
     rag_context,
+    history=None,
     web_context="",
 ):
+    # ----------------------------------------
+    # Conversation History
+    # ----------------------------------------
+
+    history_text = ""
+
+    if history:
+
+        history_text = "\n".join(
+            [
+                f"{msg['role'].upper()}: {msg['content']}"
+                for msg in history
+            ]
+        )
+
     return f"""
 User Question
 ------------------------
 
 {user_question}
+
+Conversation History
+------------------------
+
+{history_text}
 
 Uploaded Log
 ------------------------

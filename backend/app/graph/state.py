@@ -17,4 +17,7 @@ class GraphState(TypedDict):
 
     web_results: list
 
+    # NEW
+    history: list
+
     ai_response: dict
