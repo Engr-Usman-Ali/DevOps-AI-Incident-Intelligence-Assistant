@@ -1,18 +1,49 @@
-import { createContext, useState } from "react";
+import {
+  createContext,
+  useEffect,
+  useState,
+} from "react";
+
 import { sendMessage } from "../services/chatService";
+import {
+  getSessions,
+  getMessages,
+} from "../services/memoryService";
 
 export const ChatContext = createContext();
 
 export default function ChatProvider({ children }) {
+  // -----------------------------
+  // Chat State
+  // -----------------------------
+
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // Current active chat session
+  const [sessionId, setSessionId] = useState(null);
+
+  // User history
+  const [sessions, setSessions] = useState([]);
+
+  // -----------------------------
+  // Load history when token exists
+  // -----------------------------
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+
+    if (token) {
+      loadSessions();
+    }
+  }, []);
+
+  // -----------------------------
+  // Send Message
+  // -----------------------------
+
   const send = async (text, file = null) => {
     if (!text.trim() && !file) return;
-
-    // ----------------------------
-    // User Message
-    // ----------------------------
 
     const userMessage = {
       id: Date.now(),
@@ -27,11 +58,7 @@ export default function ChatProvider({ children }) {
         : null,
     };
 
-    // ----------------------------
-    // AI Loading Message
-    // ----------------------------
-
-    const thinkingMessage = {
+    const loadingMessage = {
       id: Date.now() + 1,
       role: "assistant",
       loading: true,
@@ -40,7 +67,7 @@ export default function ChatProvider({ children }) {
     setMessages((prev) => [
       ...prev,
       userMessage,
-      thinkingMessage,
+      loadingMessage,
     ]);
 
     setLoading(true);
@@ -48,15 +75,22 @@ export default function ChatProvider({ children }) {
     try {
       const response = await sendMessage(
         text,
-        file
+        file,
+        sessionId,
       );
 
-      console.log(response);
+      // Save newly created session
+      if (
+        !sessionId &&
+        response.session_id
+      ) {
+        setSessionId(response.session_id);
+      }
 
-      // ----------------------------
-      // Replace Loading Bubble
-      // ----------------------------
+      // Refresh dashboard/history
+      await loadSessions();
 
+      // Replace loading bubble
       setMessages((prev) =>
         prev.map((msg) => {
           if (!msg.loading) return msg;
@@ -64,16 +98,11 @@ export default function ChatProvider({ children }) {
           return {
             id: msg.id,
             role: "assistant",
-
-            // Complete AI JSON
             analysis: response.reply,
-
-            // Parsed Log
             parsedLog: response.parsed_log,
-
             loading: false,
           };
-        })
+        }),
       );
     } catch (error) {
       console.error(error);
@@ -85,27 +114,119 @@ export default function ChatProvider({ children }) {
           return {
             id: msg.id,
             role: "assistant",
-            content: "❌ Something went wrong.",
+            content:
+              "❌ Something went wrong.",
             loading: false,
           };
-        })
+        }),
       );
     } finally {
       setLoading(false);
     }
   };
 
+  // -----------------------------
+  // Load User Sessions
+  // -----------------------------
+
+  const loadSessions = async () => {
+    const token =
+      localStorage.getItem("access_token");
+
+    if (!token) {
+      setSessions([]);
+      return;
+    }
+
+    try {
+      const data = await getSessions();
+
+      if (Array.isArray(data)) {
+        setSessions(data);
+      } else {
+        setSessions([]);
+      }
+    } catch (error) {
+      console.error(
+        "Failed to load sessions:",
+        error,
+      );
+
+      setSessions([]);
+    }
+  };
+
+  // -----------------------------
+  // Load Previous Conversation
+  // -----------------------------
+
+  const loadConversation = async (
+    id,
+  ) => {
+    const token =
+      localStorage.getItem("access_token");
+
+    if (!token) return;
+
+    try {
+      const data = await getMessages(id);
+
+      const formatted = [];
+
+      (data || []).forEach((msg) => {
+        if (msg.role === "user") {
+          formatted.push({
+            id: msg.id,
+            role: "user",
+            content: msg.message,
+          });
+        } else {
+          formatted.push({
+            id: msg.id,
+            role: "assistant",
+            analysis:
+              msg.analysis_json || null,
+          });
+        }
+      });
+
+      setMessages(formatted);
+      setSessionId(id);
+    } catch (error) {
+      console.error(
+        "Failed to load conversation:",
+        error,
+      );
+    }
+  };
+
+  // -----------------------------
+  // Start New Chat
+  // -----------------------------
+
   const clearChat = () => {
     setMessages([]);
+    setSessionId(null);
   };
+
+  // -----------------------------
+  // Provider
+  // -----------------------------
 
   return (
     <ChatContext.Provider
       value={{
         messages,
         loading,
+
+        sessionId,
+        sessions,
+
         send,
         clearChat,
+
+        loadSessions,
+        loadConversation,
       }}
     >
       {children}

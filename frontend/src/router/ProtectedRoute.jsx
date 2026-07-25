@@ -24,6 +24,8 @@ export default function ProtectedRoute({ children }) {
       await getCurrentUser();
       setAuthorized(true);
     } catch (error) {
+      console.error(error);
+
       localStorage.removeItem("access_token");
       setAuthorized(false);
     } finally {
@@ -32,7 +34,14 @@ export default function ProtectedRoute({ children }) {
   };
 
   if (loading) {
-    return <Loader2 className="animate-spin text-cyan-500" size={45} />;
+    return (
+      <div className="flex h-screen items-center justify-center bg-slate-950">
+        <Loader2
+          className="animate-spin text-cyan-500"
+          size={45}
+        />
+      </div>
+    );
   }
 
   if (!authorized) {

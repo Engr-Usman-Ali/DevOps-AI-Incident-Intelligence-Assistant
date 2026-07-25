@@ -1,23 +1,37 @@
-import { Bell } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 
-export default function TopBar() {
+export default function TopBar({ onMenu }) {
   return (
     <header className="sticky top-0 z-20 backdrop-blur-xl bg-slate-950/70 border-b border-slate-800">
 
-      <div className="px-8 py-4 flex justify-between items-center">
+      <div className="px-4 sm:px-8 py-4 flex justify-between items-center">
 
-        <div>
+        {/* Left Side */}
+        <div className="flex items-center gap-4">
 
-          <h1 className="text-3xl font-bold">
-            Dashboard
-          </h1>
+          {/* Mobile Menu Button */}
+          <button
+            onClick={onMenu}
+            className="lg:hidden bg-slate-900 p-3 rounded-xl hover:bg-slate-800 transition"
+          >
+            <Menu size={22} />
+          </button>
 
-          <p className="text-slate-400">
-            DevOps AI Incident Intelligence
-          </p>
+
+          <div>
+            <h1 className="text-3xl font-bold">
+              Dashboard
+            </h1>
+
+            <p className="text-slate-400">
+              DevOps AI Incident Intelligence
+            </p>
+          </div>
 
         </div>
 
+
+        {/* Right Side */}
         <div className="flex items-center gap-6">
 
           <button className="relative bg-slate-900 p-3 rounded-xl hover:bg-slate-800 transition">
@@ -28,7 +42,8 @@ export default function TopBar() {
 
           </button>
 
-          <div className="flex items-center gap-3">
+
+          <div className="hidden sm:flex items-center gap-3">
 
             <img
               src="https://i.pravatar.cc/100"

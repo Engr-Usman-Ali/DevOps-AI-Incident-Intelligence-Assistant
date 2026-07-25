@@ -1,32 +1,47 @@
-import { Plus } from "lucide-react";
+import { Plus, Menu } from "lucide-react";
 
-export default function ChatHeader() {
+export default function ChatHeader({ onMenu, onNewChat }) {
+
   return (
-    <header className="border-b border-slate-800 bg-slate-900/70 backdrop-blur-xl">
+    <header className="sticky top-0 z-20 border-b border-slate-800 bg-slate-900/70 backdrop-blur-xl">
 
-      <div className="flex items-center justify-between px-8 py-4">
+      <div className="flex items-center justify-between px-4 sm:px-8 py-4">
 
-        <div>
 
-          <h1 className="text-3xl font-bold">
+        <div className="flex items-center gap-4">
 
-            AI Assistant
+          <button
+            onClick={onMenu}
+            className="lg:hidden rounded-xl bg-slate-800 p-3 hover:bg-slate-700"
+          >
+            <Menu size={22}/>
+          </button>
 
-          </h1>
 
-          <p className="text-slate-400">
+          <div>
+            <h1 className="text-3xl font-bold">
+              AI Assistant
+            </h1>
 
-            Analyze logs and ask follow-up questions.
-
-          </p>
+            <p className="text-slate-400">
+              Analyze logs and ask follow-up questions.
+            </p>
+          </div>
 
         </div>
 
-        <button className="flex items-center gap-2 whitespace-nowrap rounded-xl bg-blue-600 px-5 py-3 hover:bg-blue-700">
-          
-          <Plus size={18} />
 
-          <span>New Chat</span>
+
+        <button
+          onClick={onNewChat}
+          className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 hover:bg-blue-700"
+        >
+
+          <Plus size={18}/>
+
+          <span className="hidden sm:block">
+            New Chat
+          </span>
 
         </button>
 

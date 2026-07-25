@@ -2,16 +2,17 @@ import {
   LayoutDashboard,
   Bot,
   History,
-  Settings,
   LogOut,
   ShieldCheck,
+  X,
 } from "lucide-react";
+
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import useAuth from "../hooks/useAuth";
 
-
-export default function Sidebar() { 
+export default function Sidebar({ mobile = false, open = false, setOpen }) {
+  const { logout } = useAuth();
 
   const menus = [
     {
@@ -29,123 +30,142 @@ export default function Sidebar() {
       icon: History,
       path: "/history",
     },
-    {
-      title: "Settings",
-      icon: Settings,
-      path: "/settings",
-    },
   ];
 
-  const { logout } = useAuth();
-
   return (
-    <aside className="sticky top-0 flex h-screen w-72 flex-col border-r border-slate-800 bg-slate-950">
+    <>
+      {/* Mobile Overlay */}
 
-      {/* Logo */}
+      {mobile && open && (
+        <div
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+        />
+      )}
 
-      <div className="border-b border-slate-800 p-5">
+      {/* Sidebar */}
 
-        <div className="flex items-center gap-4">
+      <aside
+        className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col border-r border-slate-800 bg-slate-950 transition-transform duration-300
 
-          <div className="flex h-13 w-13 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 shadow-lg shadow-blue-600/30">
+        ${
+          mobile
+            ? open
+              ? "translate-x-0 lg:hidden"
+              : "-translate-x-full lg:hidden"
+            : "hidden lg:flex"
+        }`}
+      >
+        {/* Mobile Close */}
 
-            <ShieldCheck size={30} />
+        {mobile && (
+          <div className="absolute right-4 top-4 lg:hidden">
+            <button
+              onClick={() => setOpen(false)}
+              className="rounded-xl bg-slate-800 p-2 text-slate-300 hover:bg-slate-700"
+            >
+              <X size={20} />
+            </button>
+          </div>
+        )}
 
+        {/* Logo */}
+
+        <div className="border-b border-slate-800 p-5">
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 shadow-lg shadow-blue-600/30">
+              <ShieldCheck size={30} />
+            </div>
+
+            <div>
+              <h1 className="text-xl font-bold text-white">DevOps AI</h1>
+
+              <p className="text-sm text-slate-400">Incident Assistant</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation */}
+
+        <nav className="flex-1 px-5 py-8">
+          <div className="space-y-3">
+            {menus.map((menu) => {
+              const Icon = menu.icon;
+
+              return (
+                <NavLink
+                  key={menu.title}
+                  to={menu.path}
+                  onClick={() => mobile && setOpen(false)}
+                  className={({ isActive }) =>
+                    `group flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-300 ${
+                      isActive
+                        ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg"
+                        : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                    }`
+                  }
+                >
+                  <motion.div whileHover={{ rotate: 8 }}>
+                    <Icon size={22} />
+                  </motion.div>
+
+                  <span className="font-medium">{menu.title}</span>
+                </NavLink>
+              );
+            })}
+          </div>
+        </nav>
+
+        {/* AI Status */}
+
+        <div className="mx-5 mb-5 rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <div className="flex items-center gap-3">
+            <span className="h-3 w-3 animate-pulse rounded-full bg-green-500" />
+
+            <span className="text-sm font-medium text-green-400">
+              AI Monitoring Active
+            </span>
           </div>
 
-          <div>
+          <div className="mt-5 space-y-3 text-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-slate-400">LLM</span>
 
-            <h1 className="text-xl font-bold text-white">
-              DevOps AI
-            </h1>
+              <span className="font-semibold text-white">Groq</span>
+            </div>
 
-            <p className="text-sm text-slate-400">
-              Incident Assistant
-            </p>
+            <div className="flex items-center justify-between">
+              <span className="text-slate-400">Embeddings</span>
 
+              <span className="font-semibold text-cyan-400">Gemini</span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-slate-400">Search</span>
+
+              <span className="font-semibold text-blue-400">DuckDuckGo</span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-slate-400">Automation</span>
+
+              <span className="font-semibold text-yellow-400">Gmail + n8n</span>
+            </div>
           </div>
-
         </div>
 
-      </div>
+        {/* Logout */}
 
-      {/* Navigation */}
-
-      <nav className="flex-1 px-5 py-8">
-
-        <div className="space-y-3">
-
-          {menus.map((menu) => {
-            const Icon = menu.icon;
-
-            return (
-              <NavLink
-                key={menu.title}
-                to={menu.path}
-                className={({ isActive }) =>
-                  `group flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-300 ${
-                    isActive
-                      ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg"
-                      : "text-slate-400 hover:bg-slate-800 hover:text-white"
-                  }`
-                }
-              >
-                <motion.div whileHover={{ rotate: 8 }}>
-                  <Icon size={22} />
-                </motion.div>
-
-                <span className="font-medium">
-                  {menu.title}
-                </span>
-              </NavLink>
-            );
-          })}
-
+        <div className="border-t border-slate-800 p-5">
+          <button
+            onClick={logout}
+            className="flex w-full items-center justify-center gap-3 rounded-2xl bg-red-600 py-3 font-semibold text-white transition hover:bg-red-700"
+          >
+            <LogOut size={20} />
+            Logout
+          </button>
         </div>
-
-      </nav>
-
-      {/* AI Status */}
-
-      <div className="mx-5 mb-5 rounded-2xl border border-slate-800 bg-slate-900 p-5">
-
-        <div className="flex items-center gap-3">
-
-          <span className="h-3 w-3 rounded-full bg-green-500 animate-pulse"></span>
-
-          <span className="text-sm text-green-400">
-            AI Engine Online
-          </span>
-
-        </div>
-
-        <div className="mt-4 text-sm text-slate-400">
-
-          Provider
-
-          <div className="mt-1 font-semibold text-white">
-            Hugging Face
-          </div>
-
-        </div>
-
-      </div>
-
-      {/* Logout */}
-
-      <div className="border-t border-slate-800 p-5">
-
-        <button
-          onClick={logout}
-          className="flex w-full items-center justify-center gap-3 rounded-2xl bg-red-600 py-3 font-semibold text-white transition hover:bg-red-700"
-        >
-          <LogOut size={20} />
-
-          Logout
-        </button>
-
-      </div>
-
-    </aside>
+      </aside>
+    </>
   );
 }

@@ -1,131 +1,135 @@
 import {
   Brain,
-  Cpu,
   Database,
+  Search,
+  Workflow,
+  Mail,
   Activity,
 } from "lucide-react";
 
 export default function AIStatusCard() {
   return (
     <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-
-      <div className="flex justify-between">
-
+      <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">
-
-          AI Engine
-
+          AI Infrastructure
         </h2>
 
         <span className="flex items-center gap-2 text-green-400">
-
-          <span className="h-3 w-3 rounded-full bg-green-500 animate-pulse"></span>
-
+          <span className="h-3 w-3 animate-pulse rounded-full bg-green-500" />
           Online
-
         </span>
-
       </div>
 
-      <div className="space-y-6 mt-8">
-
+      <div className="mt-8 space-y-6">
         <StatusItem
           icon={<Brain />}
-          title="Model"
-          value="Mistral 7B"
+          title="LLM"
+          value="Groq • Llama 3"
         />
 
         <StatusItem
           icon={<Database />}
-          title="Provider"
-          value="Hugging Face"
+          title="Embeddings"
+          value="Google Gemini"
         />
 
         <StatusItem
-          icon={<Cpu />}
-          title="Latency"
-          value="1.2 sec"
+          icon={<Search />}
+          title="Web Search"
+          value="DuckDuckGo"
+        />
+
+        <StatusItem
+          icon={<Workflow />}
+          title="Workflow"
+          value="LangGraph"
+        />
+
+        <StatusItem
+          icon={<Mail />}
+          title="Automation"
+          value="n8n + Gmail"
         />
 
         <StatusItem
           icon={<Activity />}
-          title="Accuracy"
-          value="96%"
+          title="Status"
+          value="Operational"
+          valueColor="text-green-400"
         />
-
       </div>
 
-      <div className="mt-10">
-
-        <h3 className="font-semibold mb-4">
-
-          System Health
-
+      <div className="mt-10 rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
+        <h3 className="mb-3 font-semibold text-cyan-400">
+          AI Pipeline
         </h3>
 
-        <Progress title="CPU" value={24} />
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <Pipeline>Upload Log</Pipeline>
 
-        <Progress title="Memory" value={47} />
+          <Arrow />
 
-        <Progress title="Storage" value={36} />
+          <Pipeline>Parser</Pipeline>
 
+          <Arrow />
+
+          <Pipeline>RAG</Pipeline>
+
+          <Arrow />
+
+          <Pipeline>LLM</Pipeline>
+
+          <Arrow />
+
+          <Pipeline>Report</Pipeline>
+
+          <Arrow />
+
+          <Pipeline>Email</Pipeline>
+        </div>
       </div>
-
     </div>
   );
 }
 
-function StatusItem({ icon, title, value }) {
+function StatusItem({
+  icon,
+  title,
+  value,
+  valueColor = "text-white",
+}) {
   return (
-    <div className="flex justify-between items-center">
-
-      <div className="flex gap-3 items-center">
-
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
         <div className="text-cyan-400">
-
           {icon}
-
         </div>
 
         <span className="text-slate-400">
-
           {title}
-
         </span>
-
       </div>
 
-      <span className="font-semibold">
-
+      <span className={`font-semibold ${valueColor}`}>
         {value}
-
       </span>
-
     </div>
   );
 }
 
-function Progress({ title, value }) {
+function Pipeline({ children }) {
   return (
-    <div className="mb-5">
+    <span className="rounded-lg bg-slate-800 px-3 py-2 text-slate-300">
+      {children}
+    </span>
+  );
+}
 
-      <div className="flex justify-between mb-2">
-
-        <span>{title}</span>
-
-        <span>{value}%</span>
-
-      </div>
-
-      <div className="h-2 rounded-full bg-slate-700">
-
-        <div
-          style={{ width: `${value}%` }}
-          className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400"
-        />
-
-      </div>
-
-    </div>
+function Arrow() {
+  return (
+    <span className="text-slate-500">
+      →
+    </span>
   );
 }

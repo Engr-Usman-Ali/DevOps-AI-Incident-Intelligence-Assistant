@@ -13,7 +13,6 @@ export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-
         <Route path="/" element={<Landing />} />
 
         <Route path="/signin" element={<SignIn />} />
@@ -39,6 +38,15 @@ export default function AppRouter() {
         />
 
         <Route
+          path="/chatbot/:sessionId"
+          element={
+            <ProtectedRoute>
+              <Chatbot />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/history"
           element={
             <ProtectedRoute>
@@ -46,7 +54,6 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         />
-
       </Routes>
     </BrowserRouter>
   );
