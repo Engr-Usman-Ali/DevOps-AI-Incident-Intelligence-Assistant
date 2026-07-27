@@ -17,10 +17,9 @@ app = FastAPI(
 # Create tables
 Base.metadata.create_all(bind=engine)
 
-# CORS Configuration
 origins = [
     "http://localhost:5173",
-    "https://dev-ops-ai-incident-intelligence-as.vercel.app/",
+    "https://dev-ops-ai-incident-intelligence-as.vercel.app",
 ]
 
 app.add_middleware(
