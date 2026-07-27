@@ -46,15 +46,25 @@ export default function Sidebar({ mobile = false, open = false, setOpen }) {
       {/* Sidebar */}
 
       <aside
-        className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col border-r border-slate-800 bg-slate-950 transition-transform duration-300
+        className={`
+    z-50 flex h-screen w-72 flex-col border-r border-slate-800 bg-slate-950 transition-transform duration-300
 
-        ${
-          mobile
-            ? open
-              ? "translate-x-0 lg:hidden"
-              : "-translate-x-full lg:hidden"
-            : "hidden lg:flex"
-        }`}
+    ${
+      mobile
+        ? `
+          fixed left-0 top-0
+          ${open ? "translate-x-0" : "-translate-x-full"}
+          lg:hidden
+        `
+        : `
+          hidden
+          lg:flex
+          lg:fixed
+          lg:left-0
+          lg:top-0
+        `
+    }
+  `}
       >
         {/* Mobile Close */}
 

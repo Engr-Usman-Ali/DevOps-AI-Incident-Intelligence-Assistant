@@ -29,7 +29,7 @@ export default function ChatWindow({ messages = [] }) {
 
   return (
 
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6 w-full">
 
       {messages.map((message) => (
 

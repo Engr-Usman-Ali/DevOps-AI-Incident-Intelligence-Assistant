@@ -49,6 +49,7 @@ def retrieve_rag_node(state):
 
     retrieval = retrieve_context(
         query=state["user_question"],
+        log_content=state["log_content"],
         parsed_log=state["parsed_log"],
     )
 

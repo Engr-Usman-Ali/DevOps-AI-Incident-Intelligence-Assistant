@@ -116,19 +116,21 @@ async def analyze_chat(
             )
 
     # -----------------------------------------
-    # Save User Message
+    # User Message
     # -----------------------------------------
 
-    user_text = message
+    display_message = message
 
-    if log_content:
-
-        user_text += "\n\nUploaded Log:\n" + log_content
+    if file:
+        if message.strip():
+            display_message += f"\n📎 {file.filename}"
+        else:
+            display_message = f"📎 {file.filename}"
 
     save_user_message(
         db=db,
         session_id=session_id,
-        message=user_text,
+        message=display_message,
     )
 
     # -----------------------------------------

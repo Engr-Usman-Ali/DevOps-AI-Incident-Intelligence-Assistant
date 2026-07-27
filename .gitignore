@@ -27,8 +27,5 @@ build/
 # Database
 *.db
 
-# ChromaDB
-chroma_db/
-
 # Cache
 .cache/

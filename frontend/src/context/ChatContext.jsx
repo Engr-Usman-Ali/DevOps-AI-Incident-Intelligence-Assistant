@@ -1,14 +1,7 @@
-import {
-  createContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useEffect, useState } from "react";
 
 import { sendMessage } from "../services/chatService";
-import {
-  getSessions,
-  getMessages,
-} from "../services/memoryService";
+import { getSessions, getMessages } from "../services/memoryService";
 
 export const ChatContext = createContext();
 
@@ -76,21 +69,15 @@ export default function ChatProvider({ children }) {
       const response = await sendMessage(
         text,
         file,
-        sessionId,
+        sessionId
       );
 
-      // Save newly created session
-      if (
-        !sessionId &&
-        response.session_id
-      ) {
+      if (!sessionId && response.session_id) {
         setSessionId(response.session_id);
       }
 
-      // Refresh dashboard/history
       await loadSessions();
 
-      // Replace loading bubble
       setMessages((prev) =>
         prev.map((msg) => {
           if (!msg.loading) return msg;
@@ -102,7 +89,7 @@ export default function ChatProvider({ children }) {
             parsedLog: response.parsed_log,
             loading: false,
           };
-        }),
+        })
       );
     } catch (error) {
       console.error(error);
@@ -114,11 +101,10 @@ export default function ChatProvider({ children }) {
           return {
             id: msg.id,
             role: "assistant",
-            content:
-              "❌ Something went wrong.",
+            content: "❌ Something went wrong.",
             loading: false,
           };
-        }),
+        })
       );
     } finally {
       setLoading(false);
@@ -130,8 +116,7 @@ export default function ChatProvider({ children }) {
   // -----------------------------
 
   const loadSessions = async () => {
-    const token =
-      localStorage.getItem("access_token");
+    const token = localStorage.getItem("access_token");
 
     if (!token) {
       setSessions([]);
@@ -147,11 +132,7 @@ export default function ChatProvider({ children }) {
         setSessions([]);
       }
     } catch (error) {
-      console.error(
-        "Failed to load sessions:",
-        error,
-      );
-
+      console.error("Failed to load sessions:", error);
       setSessions([]);
     }
   };
@@ -160,11 +141,8 @@ export default function ChatProvider({ children }) {
   // Load Previous Conversation
   // -----------------------------
 
-  const loadConversation = async (
-    id,
-  ) => {
-    const token =
-      localStorage.getItem("access_token");
+  const loadConversation = async (id) => {
+    const token = localStorage.getItem("access_token");
 
     if (!token) return;
 
@@ -175,17 +153,26 @@ export default function ChatProvider({ children }) {
 
       (data || []).forEach((msg) => {
         if (msg.role === "user") {
+          const text = msg.message || "";
+
+          // Detect uploaded file message
+          const fileMatch = text.match(/^📎\s(.+)$/);
+
           formatted.push({
             id: msg.id,
             role: "user",
-            content: msg.message,
+            content: fileMatch ? "" : text,
+            file: fileMatch
+              ? {
+                  name: fileMatch[1],
+                }
+              : null,
           });
         } else {
           formatted.push({
             id: msg.id,
             role: "assistant",
-            analysis:
-              msg.analysis_json || null,
+            analysis: msg.analysis_json || null,
           });
         }
       });
@@ -195,7 +182,7 @@ export default function ChatProvider({ children }) {
     } catch (error) {
       console.error(
         "Failed to load conversation:",
-        error,
+        error
       );
     }
   };
@@ -219,11 +206,11 @@ export default function ChatProvider({ children }) {
         messages,
         loading,
 
-        sessionId,
-        sessions,
-
         send,
         clearChat,
+
+        sessionId,
+        sessions,
 
         loadSessions,
         loadConversation,
