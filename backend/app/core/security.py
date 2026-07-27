@@ -1,8 +1,7 @@
 from datetime import datetime, timedelta
 
-from jose import jwt
+from jose import jwt, JWTError
 from passlib.context import CryptContext
-from jose import JWTError
 
 from app.core.config import (
     SECRET_KEY,
@@ -10,13 +9,21 @@ from app.core.config import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
 )
 
+
 pwd_context = CryptContext(
     schemes=["bcrypt"],
     deprecated="auto",
 )
 
 
+# =========================
+# Password Hashing
+# =========================
+
 def hash_password(password: str) -> str:
+    # bcrypt supports maximum 72 bytes
+    password = password[:72]
+
     return pwd_context.hash(password)
 
 
@@ -24,20 +31,31 @@ def verify_password(
     plain_password: str,
     hashed_password: str,
 ) -> bool:
+
+    # bcrypt supports maximum 72 bytes
+    plain_password = plain_password[:72]
+
     return pwd_context.verify(
         plain_password,
         hashed_password,
     )
 
 
+# =========================
+# JWT Token
+# =========================
+
 def create_access_token(data: dict):
+
     to_encode = data.copy()
 
     expire = datetime.utcnow() + timedelta(
         minutes=ACCESS_TOKEN_EXPIRE_MINUTES
     )
 
-    to_encode.update({"exp": expire})
+    to_encode.update({
+        "exp": expire
+    })
 
     return jwt.encode(
         to_encode,
@@ -45,7 +63,9 @@ def create_access_token(data: dict):
         algorithm=ALGORITHM,
     )
 
+
 def decode_access_token(token: str):
+
     try:
         payload = jwt.decode(
             token,
