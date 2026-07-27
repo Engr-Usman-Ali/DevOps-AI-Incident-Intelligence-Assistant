@@ -20,7 +20,7 @@ Base.metadata.create_all(bind=engine)
 # CORS Configuration
 origins = [
     "http://localhost:5173",
-    "http://127.0.0.1:5173",
+    "https://dev-ops-ai-incident-intelligence-assistant-8ws4jylyx.vercel.app",
 ]
 
 app.add_middleware(
