@@ -84,7 +84,7 @@ The AI analyzes uploaded logs, retrieves relevant documentation using Retrieval-
 
 ## DevOps
 
-* Render
+* Railway 
 * Vercel
 * GitHub
 * PostgreSQL
@@ -170,6 +170,9 @@ Final LLM Response
     │
     ▼
 Structured Incident Report
+    │
+    ▼
+Send to Gmail 
 ```
 
 ---
@@ -290,7 +293,7 @@ https://dev-ops-ai-incident-intelligence-as.vercel.app/
 
 ---
 
-## Backend (Render)
+## Backend (Railway)
 
 Backend URL:
 
