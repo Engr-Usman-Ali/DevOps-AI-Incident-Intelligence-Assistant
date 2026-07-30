@@ -378,32 +378,37 @@ npm run dev
 
 ## Landing Page
 
-*Add screenshot here*
+![Landing Page 1](images/LandingPage1.jpg)
+
+![Landing Page 2](images/LandingPage2.jpg)
+
+![Landing Page 3](images/LandingPage3.jpg)
+
+![Landing Page 4](images/LandingPage4.jpg)
 
 ---
 
 ## Dashboard
 
-*Add screenshot here*
+![Dashboard](images/Dashboard.jpg)
 
 ---
 
 ## Chat Interface
 
-*Add screenshot here*
+![AI Assistant Chat](images/AI_Assisstant.jpg)
 
 ---
 
 ## Incident Analysis
 
-*Add screenshot here*
+> Incident Analysis is shown in the AI Assistant interface above.
 
 ---
 
 ## History
 
-*Add screenshot here*
-
+![History](images/History.jpg)
 ---
 
 # 🛣 Future Improvements
